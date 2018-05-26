@@ -16,11 +16,10 @@
      <tr><th>伝言です！</th></tr>
      <tr><th><%=data.msg %></th></tr>
   <table></p>
-  <p>
-   <form method="post" action="/">
-   MESAGE <input type="text" name="msg">
-   <input type="submit" value="送信">
-  </p>
+   <p>your last message:<%= cookie_data %></p>
+   <p><form method="post" action="/"></p>
+   <p>MESAGE <input type="text" name="msg">
+   <input type="submit" value="送信"></p>
  </div>
 </body>
 </html>
