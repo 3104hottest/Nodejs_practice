@@ -1,5 +1,8 @@
 const http = require('http');
 const fs = require('fs');
+const ejs = require('ejs');
+
+const index_page = fs.readFileSync('./index.ejs', 'utf8');
 
 var server = http.createServer(getFromClient);
 
@@ -10,14 +13,8 @@ console.log('Server start!');
 
 //createServerの処理
 function getFromClient(request,response){
-	fs.readFile('./index.html','UTF-8',
-			(error,data)=>{
-			var content = data.
-			replace(/dummy_title/g, 'タイトルです').
-			replace(/dummy_content/g, 'これがコンテンツです。');
+			var content = ejs.render(index_page);
 			response.writeHead(200, {'Content-Type': 'text/html'});
 			response.write(content);
 			response.end();
-			}
-		   );
 }
