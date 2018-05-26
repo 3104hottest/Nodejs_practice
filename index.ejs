@@ -14,14 +14,13 @@
   <p><%=content %></p>
   <p><table style="width:400px;">
      <tr><th>伝言です！</th></tr>
-     <tr><th><%=data.msg %></td></tr>
+     <tr><th><%=data.msg %></th></tr>
   <table></p>
-  <p><table>
-    <% for(var key in data) { %>
-      <%- include('data_item', {key:key, val:[data[key]]}) %>
-    <% } %>
-  </table></p>
+  <p>
+   <form method="post" action="/">
+   MESAGE <input type="text" name="msg">
+   <input type="submit" value="送信">
+  </p>
  </div>
 </body>
-
 </html>
