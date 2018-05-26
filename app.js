@@ -42,6 +42,13 @@ function getFromClient(request,response){
 	}
 }
 
+// 追加するデータ用変数
+var data = {
+	'Taro':'09-999-999',
+	'Hanako':'080-888-888',
+	'Sachiko':'070-777-777',
+	'Ichiro': '060-666-666'
+};
 
 // indexのアクセス処理
 function response_index(request, response){
@@ -49,6 +56,7 @@ function response_index(request, response){
 		var content = ejs.render(index_page, {
 			title:"Index",
 			content:msg,
+			data:data,
 		});
 		response.writeHead(200, {'Content-Type': 'text/html'});
 		response.write(content);
@@ -58,17 +66,17 @@ function response_index(request, response){
 // otherのアクセス処理
 function response_other(request, response){
 		var msg = "これはotherページです。"
-// POSTアクセス時の処理
-if (request.method == 'POST'){
-	var body='';
-
-	//データ受信のイベント処理
-	request.on('data', (data) => {
+	// POSTアクセス時の処理
+	if (request.method == 'POST'){
+		var body='';
+	
+		//データ受信のイベント処理
+		request.on('data', (data) => {
 		body += data;
 		});
-
-	//データ受信終了のイベント処理
-	request.on('end',() => {
+	
+		//データ受信終了のイベント処理
+		request.on('end',() => {
 		var post_data = qs.parse(body); // データのパース
 		msg += 'あなたは、「' + post_data.msg + '」と書きました。';
 		var content = ejs.render(other_page, {
@@ -78,10 +86,10 @@ if (request.method == 'POST'){
 		response.writeHead(200, {'Content-Type': 'text/html'});
 		response.write(content);
 		response.end();
-	});
-
-// GETアクセス時の処理
-} else {
+		});
+	
+	// GETアクセス時の処理
+	} else {
 		var msg = "ページがありません。"
 		var content = ejs.render(other_page, {
 			 title:"Other",
