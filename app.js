@@ -57,6 +57,7 @@ function response_index(request, response){
 			title:"Index",
 			content:msg,
 			data:data,
+			filename:'data_item'
 		});
 		response.writeHead(200, {'Content-Type': 'text/html'});
 		response.write(content);
