@@ -5,8 +5,13 @@ const url = require('url');
 const qs = require('querystring');
 
 const index_page = fs.readFileSync('./index.ejs', 'utf8');
-const other_page = fs.readFileSync('./other.ejs', 'utf8'); //追加
+const login_page = fs.readFileSync('./login.ejs', 'utf8');
 const style_css = fs.readFileSync('./style.css', 'utf8');
+
+const max_num = 10; //最大保管数
+const filename = 'mydata.txt'; //データファイル名
+var message_data; // データ
+readFromFile(filename);
 
 var server = http.createServer(getFromClient);
 
@@ -25,8 +30,8 @@ function getFromClient(request,response){
 		response_index(request,response);
 		break;
 		
-		case '/other':
-		response_other(request,response);
+		case '/login': //ログインページ
+		response_login(request,response);
 		break;
 		
 		case '/style.css':
@@ -42,15 +47,15 @@ function getFromClient(request,response){
 	}
 }
 
-// 追加するデータ用変数
-var data = {
-	'Taro':'09-999-999',
-	'Hanako':'080-888-888',
-	'Sachiko':'070-777-777',
-	'Ichiro': '060-666-666'
-};
+// loginのアクセス処理
+function response_login(request, response){
+	var content = ejs.render(login_page, {});
+	response.writeHead(200, {'Content-Type': 'text/html'});
+	response.write(content);
+	response.end();
+}
 
-var data = {msg:'no message...'}
+
 
 // indexのアクセス処理
 function response_index(request, response){
@@ -66,7 +71,7 @@ function response_index(request, response){
 		//データ受信終了のイベント処理
 		request.on('end',() => {
 			data = qs.parse(body); //データのパース
-			setCookie('msg',data.msg, response);
+			addToData(data.id, data.msg, filename, request);
 			write_index(request, response);
 		});
 	} else {
@@ -74,57 +79,43 @@ function response_index(request, response){
 	}
 }
 
-// indexの表示の作成
+// indexのページ作成
 function write_index(request, response) {
-	var msg = "※伝言を表示します。";
-	var cookie_data = getCookie('msg', request);
+	var msg = "※何かメッセージを書いてください。";
 	var content = ejs.render(index_page, {
 		title:"Index",
 		content:msg,
-		data:data,
-		cookie_data:cookie_data,
+		data:message_data,
+		filename:'data_item',
 	});
 	response.writeHead(200, {'Content-Type': 'text/html'});
 	response.write(content);
 	response.end();
 }
 
-// クッキーの値は設定
-function setCookie(key, value, response) {
-	var cookie = escape(value);
-	response.setHeader('Set-Cookie',[key + '=' + cookie]);
+// テキストファイルをロード
+function readFromFile(fname) {
+	fs.readFile(fname, 'utf8', (err, data) => {
+		message_data = data.split('\n');
+	})
 }
-// クッキーの値取得
-function getCookie(key, request) {
-	var cookie_data = request.headers.cookie != undefined ?
-	request.headers.cookie : '';
-	var data = cookie_data.split(';');
-	for(var i in data){
-		if (data[i].trim().startsWith(key + '=')){
-			var result = data[i].trim().substring(key.length + 1);
-			return unescape(result);
-		}
+
+//データを更新
+function addToData(id, msg, fname, request) {
+	var obj = {'id': id, 'msg': msg};
+	var obj_str = JSON.stringify(obj);
+	console.log('add data: ' + obj_str);
+	message_data.unshift(obj_str);
+	if(message_data.length > max_num){
+		message_data.pop();
 	}
-	return '';
+	saveToFile(fname);
 }
 
-
-var data2 = {
-	'Taro':['taro@yamada', '09-999-999', 'Tokyo'],
-	'Hanako':['hanako@flower', '080-888-888', 'Yokohama'],
-	'Sachiko':['sachiko@happy', '070-777-777', 'Nagoya'],
-	'Ichiro': ['ichiro@baseball', '060-666-666', 'USA'],
-};
-
-// otherのアクセス処理
-function response_other(request, response){
-	var msg = "これはotherページです。"
-	var content = ejs.render(other_page, {
-		title:"Other",
-		content:msg,
-		data:data2,
-		filename:'data_item'
+// データの保存
+function saveToFile(fname) {
+	var data_str = message_data.join('\n');
+	fs.writeFile(fname, data_str, (err) => {
+		if(err) {throw err; }
 	});
-		response.writeHead(200, {'Content-Type': 'text/html'});
-		response.write(content);
 }
