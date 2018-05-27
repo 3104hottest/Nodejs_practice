@@ -55,8 +55,6 @@ function response_login(request, response){
 	response.end();
 }
 
-
-
 // indexのアクセス処理
 function response_index(request, response){
 	//POSTアクセス時の処理
@@ -64,12 +62,12 @@ function response_index(request, response){
 		var body='';
 		
 		//データ受信のイベント処理
-		request.on('data', (data) => {
+		request.on('data', function (data) {
 			body +=data;
 		});
 
 		//データ受信終了のイベント処理
-		request.on('end',() => {
+		request.on('end', function () {
 			data = qs.parse(body); //データのパース
 			addToData(data.id, data.msg, filename, request);
 			write_index(request, response);
