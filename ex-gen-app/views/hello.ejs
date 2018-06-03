@@ -7,10 +7,14 @@
  </head>
  <body>
   <head>
-   <h1><%= title %></title>
+   <h1><%= title %></h1>
   </head>
   <div role="main">
    <p><%- content %></p>
+   <form method="post" action="/hello/post">
+    <input type="text" name="message">
+    <input type="submit" value="送信">
+   </form>
   </div>
  </body>
 </html>
