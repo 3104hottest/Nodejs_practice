@@ -17,10 +17,26 @@ router.get('/',(req, res, next) => {
 				title: 'Hello!',
 				content: rows // 取得したレコードデータ
 				};
-				res.render('hello',data);
+				res.render('hello/index',data);
 			}
 		});
 	});
+});
+
+router.get('/add', (req, res, next) => {
+	var data = {
+		title: 'Hello/Add',
+		content: '新しいコードを入力'
+	}
+	res.render('hello/add',data);
+});
+
+router.post('/add', (req, res, next) => {
+	var nm = req.body.name;
+	var ml = req.body.mail;
+	var ag = req.body.age;
+	db.run('insert into mydata (name, mail, age) values (?, ?, ?)', nm, ml, ag);
+	res.redirect('/hello');
 });
 
 module.exports = router;
