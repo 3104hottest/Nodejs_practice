@@ -39,4 +39,31 @@ router.post('/add', (req, res, next) => {
 	res.redirect('/hello');
 });
 
+router.get('/edit', (req, res, next) => {
+	var id = req.query.id;
+	db.serialize( () => {
+		var q = "select * from mydata where id = ?";
+		db.get(q, [id], (err, row) => {
+			if (!err) {
+				var data = {
+					title: 'hello/edit',
+					content: 'id = ' + id + ' のレコード:',
+					mydata: row
+				}
+				res.render('hello/edit', data);
+			}
+		});
+	});
+});
+
+router.post('/edit', (req, res, next) => {
+	var id = req.body.id;
+	var nm = req.body.name;
+	var ml = req.body.mail;
+	var ag = req.body.age;
+	var q  = "update mydata set name = ?, mail = ?, age = ? where id = ?";
+	db.run(q, nm, ml, ag, id);
+	res.redirect('/hello');
+});
+
 module.exports = router;
