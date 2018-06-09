@@ -5,21 +5,31 @@ var sqlite3 = require('sqlite3');
 
 var db = new sqlite3.Database('mydb.sqlite3');
 
+var knex = require('knex')({
+	dialect: 'sqlite3',
+	connection: {
+		filename: 'mydb.sqlite3'
+	},
+	useNullAsDefault:true
+});
+
+var Bookshelf = require('bookshelf')(knex);
+
+var MyData = Bookshelf.Model.extend({
+	tableName: 'mydata'
+});
+
 // GETアクセスの処理
 router.get('/',(req, res, next) => {
-	//データベースのシリアライズ
-	db.serialize(() => {
-		//レコードを全て取り出す
-		db.all("select * from mydata",(err, rows) => {
-			//データベースアクセス完了時の処理
-			if (!err) {
-				var data = {
-				title: 'Hello!',
-				content: rows // 取得したレコードデータ
-				};
-				res.render('hello/index',data);
-			}
-		});
+	new MyData().fetchAll().then((collection) => {
+		var data = {
+			title: 'Hello!',
+			content: collection.toArray()
+		};
+		res.render('hello/index', data);
+	})
+	.catch((err) => {
+		res.status(500).json({error: true, data: {message: err.message}});
 	});
 });
 
@@ -34,30 +44,8 @@ router.get('/add', (req, res, next) => {
 
 router.post('/add', (req, res, next) => {
 	var response = res;
-	req.check('name','NAMEは必ず入力して下さい。').notEmpty();
-	req.check('mail','MAILはメールアドレスを記入して下さい。').isEmail();
-	req.check('age','AGEは年齢(整数)を入力下さい。').isInt();
-	req.getValidationResult().then((result) => {
-		if(!result.isEmpty()) {
-			var res = '<ul class="error">';
-			var result_arr = result.array();
-			for(var n in result_arr) {
-				res += '<li>' + result_arr[n].msg + '</li>'
-			}
-			res += '</ul>';
-			var data = {
-				title: 'Hello/Add',
-				content: res,
-				form: req.body
-			}
-			response.render('hello/add',data);
-		} else {
-			var nm = req.body.name;
-			var ml = req.body.mail;
-			var ag = req.body.age;
-			db.run('insert into mydata (name, mail, age) values (?, ?, ?)', nm, ml, ag);
-			res.redirect('/hello');
-		}
+	new MyData(req.body).save().then((model) => {
+		response.redirect('/hello');
 	});
 });
 
