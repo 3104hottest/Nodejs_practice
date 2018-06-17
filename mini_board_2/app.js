@@ -9,7 +9,7 @@ var validator = require('express-validator');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
-var home = require('./routes/home');
+var home  = require('./routes/home');
 
 var app = express();
 
@@ -18,7 +18,7 @@ app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
-appuse(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(validator());
@@ -33,7 +33,7 @@ app.use(session(session_opt));
 
 app.use('/users', users);
 app.use('/', index);
-app.use('/home', hoem);
+app.use('/home', home);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => { });
@@ -43,7 +43,3 @@ app.use((err, req, res, next) => { });
 
 module.exports = app;
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-
-var app = express();

@@ -12,7 +12,7 @@ var knex = require('knex')({
 
 var Bookshelf = require('bookshelf')(knex);
 
-var user = Bookshelf.Model.extend({
+var User = Bookshelf.Model.extend({
 	tableName: 'users'
 });
 
@@ -31,6 +31,7 @@ router.post('/add', (req, res, next) => {
 	 req.check('name', 'NAME は必ず入力して下さい。').notEmpty();
 	 req.check('password','PASSWORD は必ず入力して下さい。').notEmpty();
 	 req.getValidationResult().then((result) => {
+	console.log(result.isEmpty());
 		 if (!result.isEmpty()) {
 			 var content = '<ul class="error">';
 			 var result_arr = result.array();
@@ -43,7 +44,7 @@ router.post('/add', (req, res, next) => {
 				content: content,
 				form: req.body
 			}
-			response.render('users'/add', data);
+			response.render('users/add', data);
 		 } else {
 			 request.session.login = null;
 			 new User(req.body).save().then((model) => {
@@ -83,7 +84,7 @@ router.post('/', (req, res, next) => {
 			response.render('users/login', data);
 		} else {
 			var nm = req.body.name;
-			var pw = req.body.passward;
+			var pw = req.body.password;
 			User.query({where: {name: nm}, andWhere: {password: pw}})
 			.fetch()
 			.then((model) => {
@@ -110,15 +111,3 @@ router.post('/', (req, res, next) => {
 
 module.exports = router;
 
-
-
-
-
-
-
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
-
-module.exports = router;

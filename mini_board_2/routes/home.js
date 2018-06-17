@@ -9,16 +9,16 @@ var knex = require('knex')({
 	useNullAsDefault:true
 });
 
-var bookshelf = require('bookshelf')(knex);
+var Bookshelf = require('bookshelf')(knex);
 
 Bookshelf.plugin('pagination');
 
 var User = Bookshelf.Model.extend({
-	table.Name: 'users'
+	tableName: 'users'
 });
 
 var Message = Bookshelf.Model.extend({
-	table.Name: 'messages',
+	tableName: 'messages',
 	hasTimestamps: true,
 	user: function() {
 		return this.belongsTo(User);
@@ -29,7 +29,7 @@ router.get('/', (req, res, next) => {
 	res.redirect('/');
 });
 
-router.get('/:id', (req, res. next) => {
+router.get('/:id', (req, res, next) => {
 	res.redirect('/home/' + req.params.id + '/1');
 });
 

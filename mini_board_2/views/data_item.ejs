@@ -6,8 +6,7 @@
  <td><%= val.attributes.message %></td>
  <%
  var d = new Date(val.attributes.created_at);
- var dstr = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()
- + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+ var dstr = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
  %>
  <td style="width:150px;"><%= dstr %></td>
 </tr>
